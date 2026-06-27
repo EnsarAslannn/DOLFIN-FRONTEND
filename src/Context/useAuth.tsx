@@ -27,12 +27,12 @@ export const UserProvider = ({ children }: Props) => {
     const [isReady, setIsReady] = useState(false)
 
     useEffect(() => {
-        const user = localStorage.getItem("user")
-        const token = localStorage.getItem("token")
-        if (user && token) {
-            setUser(JSON.parse(user))
-            setToken(token)
-            axios.defaults.headers.common["Authorization"] = "Bearer " + token
+        const localUser = localStorage.getItem("user")
+        const localToken = localStorage.getItem("token")
+        if (localUser && localToken) {
+            setUser(JSON.parse(localUser))
+            setToken(localToken)
+            axios.defaults.headers.common["Authorization"] = "Bearer " + localToken
         }
         setIsReady(true)
     }, [])
@@ -45,53 +45,63 @@ export const UserProvider = ({ children }: Props) => {
         }
     }
 
-    const registerUser = async (
-        email: string,
-        username: string,
-        password: string,
-    ) => {
+    const registerUser = async (email: string, username: string, password: string) => {
         await registerAPI(email, username, password)
             .then((res) => {
-                if (res) {
-                    localStorage.setItem("token", res?.data.token)
+                if (res && res.data) {
+                    const receivedToken = (res.data as any).token || (res.data as any).Token
+                    const receivedUserName = (res.data as any).userName || (res.data as any).UserName
+                    const receivedEmail = (res.data as any).email || (res.data as any).Email
+                    const receivedBalance = (res.data as any).walletBalance || (res.data as any).WalletBalance || 0
+
+                    localStorage.setItem("token", receivedToken)
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
+
                     const userObj = {
-                        userName: res?.data.userName,
-                        email: res?.data.email,
-                        walletBalance: res?.data.walletBalance ?? 0,
+                        userName: receivedUserName,
+                        email: receivedEmail,
+                        walletBalance: receivedBalance,
                     }
                     localStorage.setItem("user", JSON.stringify(userObj))
-                    setToken(res?.data.token!)
-                    setUser(userObj!)
-                    toast.success("Login Success!")
+                    setToken(receivedToken)
+                    setUser(userObj)
+                    toast.success("Registration Success!")
                     navigate("/search")
                 }
             })
             .catch((e) => {
                 console.error(e)
-                toast.warning("Server error occured")
+                toast.warning("Server error occurred")
             })
     }
 
     const loginUser = async (username: string, password: string) => {
         await loginAPI(username, password)
             .then((res) => {
-                if (res) {
-                    localStorage.setItem("token", res?.data.token)
+                if (res && res.data) {
+                    const receivedToken = (res.data as any).token || (res.data as any).Token
+                    const receivedUserName = (res.data as any).userName || (res.data as any).UserName
+                    const receivedEmail = (res.data as any).email || (res.data as any).Email
+                    const receivedBalance = (res.data as any).walletBalance || (res.data as any).WalletBalance || 0
+
+                    localStorage.setItem("token", receivedToken)
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
+
                     const userObj = {
-                        userName: res?.data.userName,
-                        email: res?.data.email,
-                        walletBalance: res?.data.walletBalance ?? 0,
+                        userName: receivedUserName,
+                        email: receivedEmail,
+                        walletBalance: receivedBalance,
                     }
                     localStorage.setItem("user", JSON.stringify(userObj))
-                    setToken(res?.data.token!)
-                    setUser(userObj!)
+                    setToken(receivedToken)
+                    setUser(userObj)
                     toast.success("Login Success!")
                     navigate("/search")
                 }
             })
             .catch((e) => {
                 console.error(e)
-                toast.warning("Server error occured")
+                toast.warning("Server error occurred")
             })
     }
 
@@ -102,6 +112,7 @@ export const UserProvider = ({ children }: Props) => {
     const logout = () => {
         localStorage.removeItem("token")
         localStorage.removeItem("user")
+        delete axios.defaults.headers.common["Authorization"]
         setUser(null)
         setToken("")
         navigate("/")

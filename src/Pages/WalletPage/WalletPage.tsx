@@ -38,8 +38,11 @@ const WalletPage = () => {
             const response = await axios.get(`${apiBaseURL}/api/account/profile`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            if (response?.data?.walletBalance !== undefined) {
-                updateWalletBalance(response.data.walletBalance)
+            if (response && response.data) {
+                const balance = response.data.walletBalance !== undefined ? response.data.walletBalance : response.data.WalletBalance;
+                if (balance !== undefined) {
+                    updateWalletBalance(balance)
+                }
             }
         } catch (error) {
             console.error("Failed to refresh wallet balance:", error)

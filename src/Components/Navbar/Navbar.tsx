@@ -13,7 +13,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center space-x-3 group">
             <img src={logo} alt="DOLFIN Logo" className="h-9 object-contain" />
             <span className="text-2xl font-black italic tracking-wider text-emerald-400 font-mono uppercase select-none group-hover:text-emerald-300 transition-colors">
-              DOLFIN
+              DOL-FIN
             </span>
           </Link>
 

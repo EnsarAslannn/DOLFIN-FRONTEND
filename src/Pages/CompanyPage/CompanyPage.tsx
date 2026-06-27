@@ -26,7 +26,8 @@ const CompanyPage = () => {
 
       try {
         const token = localStorage.getItem("token")
-        const dbResult = await axios.get(`https://localhost:7109/api/stock?Symbol=${ticker?.toUpperCase()}`, {
+        const apiBaseURL = import.meta.env.VITE_API_URL || "https://localhost:7109"
+        const dbResult = await axios.get(`${apiBaseURL}/api/stock?Symbol=${ticker?.toUpperCase()}`, {
           headers: { Authorization: `Bearer ${token}` }
         })
         if (dbResult && dbResult.data && dbResult.data.length > 0) {

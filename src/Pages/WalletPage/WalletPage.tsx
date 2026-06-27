@@ -5,6 +5,7 @@ import type { PortfolioGet } from "../../Models/Portfolio"
 import { companyLogos } from "../../Components/Table/TestData"
 import { toast } from "react-toastify"
 import PurchasePortfolio from "../../Components/Portfolio/PurchasePortfolio/PurchasePortfolio"
+import axios from "axios"
 
 const WalletPage = () => {
     const { user, updateWalletBalance } = useAuth()
@@ -18,8 +19,9 @@ const WalletPage = () => {
     useEffect(() => {
         if (user) {
             getWalletPortfolio()
+            refreshWalletBalance()
         }
-    }, [user])
+    }, [user?.userName])
 
     const getWalletPortfolio = () => {
         portfolioGetAPI()
@@ -27,6 +29,21 @@ const WalletPage = () => {
                 if (res?.data) setPortfolioValues(res.data)
             })
             .catch((e) => console.error(e))
+    }
+
+    const refreshWalletBalance = async () => {
+        try {
+            const token = localStorage.getItem("token")
+            const apiBaseURL = import.meta.env.VITE_API_URL || "https://localhost:7109"
+            const response = await axios.get(`${apiBaseURL}/api/account/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            if (response?.data?.walletBalance !== undefined) {
+                updateWalletBalance(response.data.walletBalance)
+            }
+        } catch (error) {
+            console.error("Failed to refresh wallet balance:", error)
+        }
     }
 
     const handleDepositSubmit = (e: React.FormEvent) => {
@@ -304,7 +321,7 @@ const WalletPage = () => {
                     stockPrice={selectedSellStock.price}
                     walletBalance={user?.walletBalance || 0}
                     mode="SELL"
-                    maxOwnedQuantity={selectedSellStock.maxQuantity}
+                    maxOwnedQuantity={selectedSellStock?.maxQuantity || 0}
                 />
             )}
         </div>

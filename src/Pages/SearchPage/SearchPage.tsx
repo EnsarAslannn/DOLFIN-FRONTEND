@@ -183,9 +183,11 @@ const SearchPage = () => {
       const token = localStorage.getItem("token")
       const queryValue = search.trim()
 
+      const apiBaseURL = import.meta.env.VITE_API_URL || "https://localhost:7109";
+
       const url = queryValue.length <= 5
-        ? `https://localhost:7109/api/stock?Symbol=${queryValue.toUpperCase()}`
-        : `https://localhost:7109/api/stock?CompanyName=${queryValue}`
+        ? `${apiBaseURL}/api/stock?Symbol=${queryValue.toUpperCase()}`
+        : `${apiBaseURL}/api/stock?CompanyName=${queryValue}`
 
       const response = await axios.get(url, {
         headers: { Authorization: `Bearer ${token}` },

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { useAuth } from "../../Context/useAuth"
 import { portfolioDepositAPI, portfolioGetAPI, portfolioSellAPI } from "../../Services/PortfolioService"
 import type { PortfolioGet } from "../../Models/Portfolio"
@@ -16,16 +16,15 @@ const WalletPage = () => {
     const [selectedSellStock, setSelectedSellStock] = useState<{ symbol: string; price: number; maxQuantity: number } | null>(null)
     const [liveBalance, setLiveBalance] = useState<number>(0)
 
-    useEffect(() => {
-        const initializeWallet = async () => {
-            const token = localStorage.getItem("token")
-            if (token) {
-                await getWalletPortfolio()
-                await refreshWalletBalance()
-            }
-        }
+    const isInitialFetched = useRef<boolean>(false)
 
-        initializeWallet()
+    useEffect(() => {
+        const token = localStorage.getItem("token")
+        if (token && user?.userName && !isInitialFetched.current) {
+            isInitialFetched.current = true
+            getWalletPortfolio()
+            refreshWalletBalance()
+        }
     }, [user?.userName])
 
     const getWalletPortfolio = () => {

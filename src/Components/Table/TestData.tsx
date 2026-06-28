@@ -293,10 +293,10 @@ export const testKeyMetricsData: Record<string, CompanyKeyMetrics[]> = {
       interestCoverageTTM: 44.9,
       incomeQualityTTM: 1.21,
       dividendYieldTTM: 0.008,
-      dividendYieldPercentageTTM: 0.8, // Yeni eklenen alan
+      dividendYieldPercentageTTM: 0.8,
       payoutRatioTTM: 0.27,
       salesGeneralAndAdministrativeToRevenueTTM: 0.14,
-      researchAndDevelopementToRevenueTTM: 0.13, // Yazım hatası şemana uyduruldu
+      researchAndDevelopementToRevenueTTM: 0.13,
       intangiblesToTotalAssetsTTM: 0.18,
       capexToOperatingCashFlowTTM: 0.32,
       capexToRevenueTTM: 0.13,
@@ -321,8 +321,8 @@ export const testKeyMetricsData: Record<string, CompanyKeyMetrics[]> = {
       inventoryTurnoverTTM: 27.4,
       roeTTM: 0.352,
       capexPerShareTTM: -3.77,
-      dividendPerShareTTM: 3.0, // Yeni eklenen alan
-      debtToMarketCapTTM: 0.023, // Yeni eklenen alan
+      dividendPerShareTTM: 3.0,
+      debtToMarketCapTTM: 0.023,
     },
   ],
   AAPL: [

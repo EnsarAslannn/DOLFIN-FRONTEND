@@ -17,8 +17,11 @@ const WalletPage = () => {
     const [liveBalance, setLiveBalance] = useState<number>(0)
 
     useEffect(() => {
-        getWalletPortfolio()
-        refreshWalletBalance()
+        const token = localStorage.getItem("token")
+        if (token) {
+            getWalletPortfolio()
+            refreshWalletBalance()
+        }
     }, [user?.userName])
 
     const getWalletPortfolio = () => {
@@ -37,9 +40,7 @@ const WalletPage = () => {
             const apiBaseURL = import.meta.env.VITE_API_URL || "https://localhost:7109"
             const response = await axios.get(`${apiBaseURL}/api/account/profile`, {
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Cache-Control": "no-cache",
-                    "Pragma": "no-cache"
+                    Authorization: `Bearer ${token}`
                 },
             })
             if (response && response.data) {

@@ -38,10 +38,14 @@ export const UserProvider = ({ children }: Props) => {
     }, [])
 
     const updateWalletBalance = (newBalance: number) => {
-        if (user) {
-            const updatedUser = { ...user, walletBalance: newBalance }
-            localStorage.setItem("user", JSON.stringify(updatedUser))
-            setUser({ ...updatedUser })
+        const localUser = localStorage.getItem("user")
+        if (localUser) {
+            const parsedUser = JSON.parse(localUser)
+            if (parsedUser.walletBalance !== newBalance) {
+                parsedUser.walletBalance = newBalance
+                localStorage.setItem("user", JSON.stringify(parsedUser))
+                setUser(parsedUser)
+            }
         }
     }
 

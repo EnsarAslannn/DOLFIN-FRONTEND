@@ -45,7 +45,8 @@ const WalletPage = () => {
                 apiBaseURL = apiBaseURL.slice(0, -1)
             }
 
-            const response = await axios.post(`${apiBaseURL}/api/account/profile`, {}, {
+            const cleanAxios = axios.create()
+            const response = await cleanAxios.post(`${apiBaseURL}/api/account/profile`, {}, {
                 headers: {
                     Authorization: `Bearer ${token.trim()}`,
                     "Cache-Control": "no-cache, no-store, must-revalidate",

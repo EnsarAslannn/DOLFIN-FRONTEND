@@ -17,11 +17,10 @@ const WalletPage = () => {
     const [liveBalance, setLiveBalance] = useState<number>(0)
 
     useEffect(() => {
-        const timer = setTimeout(() => {
+        if (user && user.userName) {
             getWalletPortfolio()
             refreshWalletBalance()
-        }, 150)
-        return () => clearTimeout(timer)
+        }
     }, [user?.userName])
 
     const getWalletPortfolio = () => {

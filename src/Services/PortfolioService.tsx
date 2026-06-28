@@ -5,7 +5,7 @@ import { handleError } from "../Helpers/ErrorHandler"
 export const portfolioAddAPI = async (symbol: string, quantity: number) => {
     try {
         const data = await axiosInstance.post<{ message: string; newBalance: number }>(
-            "/api/portfolio/",
+            "/api/portfolio",
             null,
             {
                 params: { symbol, quantity }
@@ -34,7 +34,7 @@ export const portfolioSellAPI = async (symbol: string, quantity: number) => {
 
 export const portfolioGetAPI = async () => {
     try {
-        const data = await axiosInstance.get<PortfolioGet[]>("/api/portfolio/")
+        const data = await axiosInstance.get<PortfolioGet[]>("/api/portfolio")
         return data
     } catch (error) {
         handleError(error)

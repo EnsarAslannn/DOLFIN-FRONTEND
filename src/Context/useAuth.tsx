@@ -5,6 +5,7 @@ import { loginAPI, registerAPI } from "../Services/AuthService"
 import { toast } from "react-toastify"
 import React from "react"
 import axios from "axios"
+import { axiosInstance } from "../Helpers/AxiosInstance"
 
 type UserContextType = {
     user: UserProfile | null
@@ -30,9 +31,11 @@ export const UserProvider = ({ children }: Props) => {
         const localUser = localStorage.getItem("user")
         const localToken = localStorage.getItem("token")
         if (localUser && localToken) {
+            const parsedToken = localToken.trim()
             setUser(JSON.parse(localUser))
-            setToken(localToken)
-            axios.defaults.headers.common["Authorization"] = "Bearer " + localToken
+            setToken(parsedToken)
+            axios.defaults.headers.common["Authorization"] = "Bearer " + parsedToken
+            axiosInstance.defaults.headers.common["Authorization"] = "Bearer " + parsedToken
         }
         setIsReady(true)
     }, [])
@@ -53,13 +56,14 @@ export const UserProvider = ({ children }: Props) => {
         await registerAPI(email, username, password)
             .then((res) => {
                 if (res && res.data) {
-                    const receivedToken = (res.data as any).token || (res.data as any).Token
+                    const receivedToken = ((res.data as any).token || (res.data as any).Token).trim()
                     const receivedUserName = (res.data as any).userName || (res.data as any).UserName
                     const receivedEmail = (res.data as any).email || (res.data as any).Email
                     const receivedBalance = (res.data as any).walletBalance || (res.data as any).WalletBalance || 0
 
                     localStorage.setItem("token", receivedToken)
                     axios.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
+                    axiosInstance.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
 
                     const userObj = {
                         userName: receivedUserName,
@@ -70,7 +74,10 @@ export const UserProvider = ({ children }: Props) => {
                     setToken(receivedToken)
                     setUser(userObj)
                     toast.success("Registration Success!")
-                    navigate("/search")
+
+                    setTimeout(() => {
+                        navigate("/search")
+                    }, 50)
                 }
             })
             .catch((e) => {
@@ -83,13 +90,14 @@ export const UserProvider = ({ children }: Props) => {
         await loginAPI(username, password)
             .then((res) => {
                 if (res && res.data) {
-                    const receivedToken = (res.data as any).token || (res.data as any).Token
+                    const receivedToken = ((res.data as any).token || (res.data as any).Token).trim()
                     const receivedUserName = (res.data as any).userName || (res.data as any).UserName
                     const receivedEmail = (res.data as any).email || (res.data as any).Email
                     const receivedBalance = (res.data as any).walletBalance || (res.data as any).WalletBalance || 0
 
                     localStorage.setItem("token", receivedToken)
                     axios.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
+                    axiosInstance.defaults.headers.common["Authorization"] = "Bearer " + receivedToken
 
                     const userObj = {
                         userName: receivedUserName,
@@ -100,7 +108,10 @@ export const UserProvider = ({ children }: Props) => {
                     setToken(receivedToken)
                     setUser(userObj)
                     toast.success("Login Success!")
-                    navigate("/search")
+
+                    setTimeout(() => {
+                        navigate("/search")
+                    }, 50)
                 }
             })
             .catch((e) => {
@@ -118,6 +129,9 @@ export const UserProvider = ({ children }: Props) => {
         localStorage.removeItem("user")
         if (axios.defaults.headers.common["Authorization"]) {
             delete axios.defaults.headers.common["Authorization"]
+        }
+        if (axiosInstance.defaults.headers.common["Authorization"]) {
+            delete axiosInstance.defaults.headers.common["Authorization"]
         }
         setUser(null)
         setToken(null)

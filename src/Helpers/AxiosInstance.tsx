@@ -12,11 +12,16 @@ export const axiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem("token")
-        if (token) {
+
+        if (token && token.trim() !== "") {
             config.headers["Authorization"] = `Bearer ${token.trim()}`
+        } else if (axios.defaults.headers.common["Authorization"]) {
+            config.headers["Authorization"] = axios.defaults.headers.common["Authorization"]
         }
+
         config.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
         config.headers["Pragma"] = "no-cache"
+        config.headers["Expires"] = "0"
         return config
     },
     (error) => {

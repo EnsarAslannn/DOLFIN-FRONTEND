@@ -12,16 +12,13 @@ const WalletPage = () => {
     const [depositAmount, setDepositAmount] = useState<string>("")
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
     const [portfolioValues, setPortfolioValues] = useState<PortfolioGet[] | null>([])
-
     const [isSellModalOpen, setIsSellModalOpen] = useState<boolean>(false)
     const [selectedSellStock, setSelectedSellStock] = useState<{ symbol: string; price: number; maxQuantity: number } | null>(null)
 
     useEffect(() => {
-        if (user) {
-            getWalletPortfolio()
-            refreshWalletBalance()
-        }
-    }, [user?.userName])
+        getWalletPortfolio()
+        refreshWalletBalance()
+    }, [])
 
     const getWalletPortfolio = () => {
         portfolioGetAPI()
@@ -39,7 +36,7 @@ const WalletPage = () => {
                 headers: { Authorization: `Bearer ${token}` },
             })
             if (response && response.data) {
-                const balance = response.data.walletBalance !== undefined ? response.data.walletBalance : response.data.WalletBalance;
+                const balance = response.data.walletBalance !== undefined ? response.data.walletBalance : response.data.WalletBalance
                 if (balance !== undefined) {
                     updateWalletBalance(balance)
                 }
@@ -65,6 +62,7 @@ const WalletPage = () => {
                     updateWalletBalance(res.data.newBalance)
                     toast.success(`$${amount.toLocaleString()} deposited successfully!`)
                     setDepositAmount("")
+                    refreshWalletBalance()
                 }
             })
             .catch((e) => {
@@ -122,6 +120,7 @@ const WalletPage = () => {
                     setIsSellModalOpen(false)
                     setSelectedSellStock(null)
                     getWalletPortfolio()
+                    refreshWalletBalance()
                 }
             })
             .catch((e) => {
@@ -146,14 +145,11 @@ const WalletPage = () => {
     return (
         <div className="w-full min-h-screen bg-[#0b0f19] font-sans pb-16 text-gray-100 text-left">
             <div className="w-full max-w-6xl mx-auto px-6 pt-10 flex flex-col space-y-8">
-
                 <div className="border-b border-gray-800/60 pb-4">
                     <h1 className="text-2xl font-black tracking-tight text-white">Wallet Overview</h1>
                     <p className="text-xs text-gray-500 mt-1">Manage your funds and monitor estimated asset distribution.</p>
                 </div>
-
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
                     <div className="lg:col-span-2 bg-[#141a26] border border-gray-800/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden">
                         <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
                         <div>
@@ -163,7 +159,6 @@ const WalletPage = () => {
                                 <span className="text-sm font-bold text-gray-400 font-mono">USD</span>
                             </div>
                         </div>
-
                         <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-gray-800/40">
                             <div className="flex flex-col">
                                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Cash Balance (Wallet)</span>
@@ -175,7 +170,6 @@ const WalletPage = () => {
                             </div>
                         </div>
                     </div>
-
                     <div className="bg-[#141a26] border border-gray-800/60 rounded-2xl p-6 shadow-xl flex flex-col justify-between">
                         <div>
                             <h3 className="text-sm font-black text-white tracking-wide uppercase mb-1">Deposit Cash</h3>
@@ -197,7 +191,6 @@ const WalletPage = () => {
                                     <span className="absolute right-4 font-sans text-xs font-black text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">USD</span>
                                 </div>
                             </div>
-
                             <button
                                 type="submit"
                                 disabled={isSubmitting || !depositAmount}
@@ -211,7 +204,6 @@ const WalletPage = () => {
                         </form>
                     </div>
                 </div>
-
                 <div className="bg-[#141a26] border border-gray-800/60 rounded-2xl shadow-xl overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-800/40 bg-[#0b0f19]/30">
                         <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">My Assets (Asset View)</h3>
@@ -259,7 +251,6 @@ const WalletPage = () => {
                                         </button>
                                     </td>
                                 </tr>
-
                                 {portfolioValues && portfolioValues.map((item) => {
                                     const livePrice = item.purchase || 0
                                     const symbolUpper = item.symbol.toUpperCase()
@@ -309,9 +300,7 @@ const WalletPage = () => {
                         </table>
                     </div>
                 </div>
-
             </div>
-
             {selectedSellStock && (
                 <PurchasePortfolio
                     isOpen={isSellModalOpen}

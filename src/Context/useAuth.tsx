@@ -40,8 +40,8 @@ export const UserProvider = ({ children }: Props) => {
     const updateWalletBalance = (newBalance: number) => {
         if (user) {
             const updatedUser = { ...user, walletBalance: newBalance }
-            setUser(updatedUser)
             localStorage.setItem("user", JSON.stringify(updatedUser))
+            setUser({ ...updatedUser })
         }
     }
 

@@ -14,11 +14,12 @@ const WalletPage = () => {
     const [portfolioValues, setPortfolioValues] = useState<PortfolioGet[] | null>([])
     const [isSellModalOpen, setIsSellModalOpen] = useState<boolean>(false)
     const [selectedSellStock, setSelectedSellStock] = useState<{ symbol: string; price: number; maxQuantity: number } | null>(null)
+    const [liveBalance, setLiveBalance] = useState<number>(0)
 
     useEffect(() => {
         getWalletPortfolio()
         refreshWalletBalance()
-    }, [])
+    }, [user?.userName])
 
     const getWalletPortfolio = () => {
         portfolioGetAPI()
@@ -34,18 +35,17 @@ const WalletPage = () => {
             if (!token) return
 
             const apiBaseURL = import.meta.env.VITE_API_URL || "https://localhost:7109"
-
             const response = await axios.get(`${apiBaseURL}/api/account/profile`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Cache-Control": "no-cache",
-                    Pragma: "no-cache"
+                    "Pragma": "no-cache"
                 },
             })
-
             if (response && response.data) {
                 const balance = response.data.walletBalance !== undefined ? response.data.walletBalance : response.data.WalletBalance
                 if (balance !== undefined) {
+                    setLiveBalance(balance)
                     updateWalletBalance(balance)
                 }
             }
@@ -67,6 +67,7 @@ const WalletPage = () => {
         portfolioDepositAPI(amount)
             .then((res) => {
                 if (res && res.data?.newBalance !== undefined) {
+                    setLiveBalance(res.data.newBalance)
                     updateWalletBalance(res.data.newBalance)
                     toast.success(`$${amount.toLocaleString()} deposited successfully!`)
                     setDepositAmount("")
@@ -92,15 +93,14 @@ const WalletPage = () => {
     }
 
     const triggerUsdSell = () => {
-        const currentBalance = user?.walletBalance || 0
-        if (currentBalance <= 0) {
+        if (liveBalance <= 0) {
             toast.warning("You do not have any USD balance to sell!")
             return
         }
         setSelectedSellStock({
             symbol: "USD",
             price: 1.00,
-            maxQuantity: currentBalance
+            maxQuantity: liveBalance
         })
         setIsSellModalOpen(true)
     }
@@ -109,8 +109,8 @@ const WalletPage = () => {
         if (!selectedSellStock) return
 
         if (selectedSellStock.symbol === "USD") {
-            const currentBalance = user?.walletBalance || 0
-            const newBalance = currentBalance - quantity
+            const newBalance = liveBalance - quantity
+            setLiveBalance(newBalance)
             updateWalletBalance(newBalance)
             setIsSellModalOpen(false)
             setSelectedSellStock(null)
@@ -123,6 +123,7 @@ const WalletPage = () => {
                 if (res && res.status >= 200 && res.status < 300) {
                     toast.success("Asset converted to cash successfully!")
                     if (res.data?.newBalance !== undefined) {
+                        setLiveBalance(res.data.newBalance)
                         updateWalletBalance(res.data.newBalance)
                     }
                     setIsSellModalOpen(false)
@@ -146,9 +147,8 @@ const WalletPage = () => {
         }, 0)
     }
 
-    const cashBalance = user?.walletBalance || 0
     const stocksValue = calculateStocksValue()
-    const estimatedTotalValue = cashBalance + stocksValue
+    const estimatedTotalValue = liveBalance + stocksValue
 
     return (
         <div className="w-full min-h-screen bg-[#0b0f19] font-sans pb-16 text-gray-100 text-left">
@@ -170,7 +170,7 @@ const WalletPage = () => {
                         <div className="grid grid-cols-2 gap-4 pt-6 mt-6 border-t border-gray-800/40">
                             <div className="flex flex-col">
                                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Cash Balance (Wallet)</span>
-                                <span className="text-base font-mono font-bold text-emerald-400 mt-1">${cashBalance.toFixed(2)}</span>
+                                <span className="text-base font-mono font-bold text-emerald-400 mt-1">${liveBalance.toFixed(2)}</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">Stocks Value (Portfolio)</span>
@@ -245,9 +245,9 @@ const WalletPage = () => {
                                     </td>
                                     <td className="py-4 px-6 text-right font-mono text-gray-400 font-semibold">$1.00</td>
                                     <td className="py-4 px-6 text-right flex flex-col items-end justify-center">
-                                        <span className="text-white font-mono font-bold">${cashBalance.toFixed(2)}</span>
+                                        <span className="text-white font-mono font-bold">${liveBalance.toFixed(2)}</span>
                                         <span className="text-xs text-gray-500 font-mono mt-0.5">
-                                            {estimatedTotalValue > 0 ? ((cashBalance / estimatedTotalValue) * 100).toFixed(1) : 0}%
+                                            {estimatedTotalValue > 0 ? ((liveBalance / estimatedTotalValue) * 100).toFixed(1) : 0}%
                                         </span>
                                     </td>
                                     <td className="py-4 px-6 text-center">
@@ -319,7 +319,7 @@ const WalletPage = () => {
                     onConfirm={handleConfirmTableSell}
                     stockSymbol={selectedSellStock.symbol}
                     stockPrice={selectedSellStock.price}
-                    walletBalance={user?.walletBalance || 0}
+                    walletBalance={liveBalance}
                     mode="SELL"
                     maxOwnedQuantity={selectedSellStock?.maxQuantity || 0}
                 />

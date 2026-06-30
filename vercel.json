@@ -1,4 +1,6 @@
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "rewrites": [
     {
       "source": "/openapi.json",
@@ -13,11 +15,7 @@
       "destination": "https://ensaraslannn-001-site1.ctempurl.com/api/:path*"
     },
     {
-      "source": "/api-doc.html",
-      "destination": "/api-doc.html"
-    },
-    {
-      "source": "/:path*",
+      "source": "/((?!api-doc|assets|openapi\\.json).*)" ,
       "destination": "/index.html"
     }
   ]

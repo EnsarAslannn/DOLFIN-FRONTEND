@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://45.58.159.167/api/:path*"
+      "destination": "https://ensaraslannn-001-site1.ctempurl.com/api/:path*"
     }
   ]
 }

@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/scalar/:path*",
-      "destination": "https://ensaraslannn-001-site1.ctempurl.com/scalar/:path*"
+      "source": "/openapi.json",
+      "destination": "https://ensaraslannn-001-site1.ctempurl.com/openapi.json"
     },
     {
-      "source": "/openapi/:path*",
-      "destination": "https://ensaraslannn-001-site1.ctempurl.com/openapi/:path*"
+      "source": "/scalar/v1",
+      "destination": "https://ensaraslannn-001-site1.ctempurl.com/scalar/v1"
     },
     {
       "source": "/api/:path*",

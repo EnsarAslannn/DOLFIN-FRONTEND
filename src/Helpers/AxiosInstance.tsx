@@ -17,6 +17,17 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
     (config) => {
+        if (config.baseURL && config.baseURL.includes("localhost") && config.url) {
+            if (config.url.startsWith("/api/")) {
+                config.url = config.url.replace("/api/", "")
+            } else if (config.url.startsWith("api/")) {
+                config.url = config.url.replace("api/", "")
+            }
+            if (!config.url.startsWith("/")) {
+                config.url = `/${config.url}`
+            }
+        }
+
         const userString = localStorage.getItem("user")
         if (userString) {
             const user = JSON.parse(userString)
